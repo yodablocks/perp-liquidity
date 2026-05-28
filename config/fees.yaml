@@ -1,0 +1,52 @@
+# Taker fees per venue, in basis points.
+# last_verified: date this was confirmed from official docs or support.
+# Source: venue fee schedule pages, confirmed 2026-05-28.
+
+venues:
+  hyperliquid:
+    taker_bps: 4.5
+    maker_bps: 0.0
+    last_verified: "2026-05-28"
+    notes: "VIP tiers available. Default taker 4.5 bps. Maker rebate 0."
+
+  paradex:
+    taker_bps: 0.0
+    maker_bps: 0.0
+    last_verified: "2026-05-28"
+    notes: "Zero fees during current phase. Subject to change."
+
+  lighter:
+    taker_bps: 1.0
+    maker_bps: 0.0
+    last_verified: "2026-05-28"
+    notes: "Marketing claims 0 fees; actual API taker fee is 1 bp. Maker 0."
+
+  aster:
+    taker_bps: 4.0
+    maker_bps: 0.0
+    last_verified: "2026-05-28"
+    notes: "defaultTakerFeeRate confirmed from getMetaData contractList field."
+
+  extended:
+    taker_bps: 2.5
+    maker_bps: 0.0
+    last_verified: "2026-05-28"
+    notes: "From docs.extended.exchange fee schedule."
+
+  edgex:
+    taker_bps: 3.8
+    maker_bps: 1.8
+    last_verified: "2026-05-28"
+    notes: "defaultTakerFeeRate=0.00038, defaultMakerFeeRate=0.00018 confirmed from getMetaData."
+
+  apex:
+    taker_bps: 5.0
+    maker_bps: 0.0
+    last_verified: "2026-05-28"
+    notes: "From ApeX Pro fee schedule. Maker rebate tiers available."
+
+  grvt:
+    taker_bps: 4.5
+    maker_bps: 0.0
+    last_verified: "2026-05-28"
+    notes: "From GRVT fee documentation."
