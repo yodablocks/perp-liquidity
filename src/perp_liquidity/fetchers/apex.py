@@ -34,6 +34,7 @@ import httpx
 
 from .base import (
     Coverage,
+    DNSOverrideTransport,
     FundingRate,
     Liquidation,
     OpenInterest,
@@ -66,11 +67,24 @@ class ApeXClient(PerpDEXClient):
         "liquidations": Coverage.NOT_AVAILABLE,
     }
 
+    # omni.apex.exchange resolves to 127.0.0.1 on some ISPs (confirmed French
+    # residential). Real IP confirmed via Google DNS 2026-05-28. DNSOverrideTransport
+    # routes TCP to the real IP while preserving TLS SNI and Host header.
+    DNS_OVERRIDES = {"omni.apex.exchange": "157.185.129.119"}
+
     def __init__(self, client: httpx.AsyncClient | None = None):
         super().__init__(client)
         # ticker cache: symbol -> (fetched_at, data_dict)
         self._ticker_cache: dict[str, tuple[datetime, dict]] = {}
         self._ticker_lock = asyncio.Lock()
+
+    async def __aenter__(self) -> "ApeXClient":
+        if self._client is None:
+            self._client = httpx.AsyncClient(
+                transport=DNSOverrideTransport(self.DNS_OVERRIDES),
+                timeout=self.TIMEOUT,
+            )
+        return self  # type: ignore[return-value]
 
     @staticmethod
     def _symbol(token: str) -> str:

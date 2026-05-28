@@ -27,6 +27,46 @@ import httpx
 
 
 # ============================================================================
+# DNS override transport
+# ============================================================================
+
+
+class DNSOverrideTransport(httpx.AsyncHTTPTransport):
+    """AsyncHTTPTransport that routes specific hostnames to fixed IPs.
+
+    Used to bypass broken ISP DNS for geo-blocked venues (e.g. ApeX resolves
+    to 127.0.0.1 on French ISPs). TLS SNI and Host header are preserved so
+    the server's certificate validates correctly against the original hostname.
+
+    Args:
+        overrides: mapping of hostname -> IP address string.
+    """
+
+    def __init__(self, overrides: dict[str, str], **kwargs):
+        super().__init__(**kwargs)
+        self._overrides = overrides
+
+    async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
+        host = request.url.host
+        if host in self._overrides:
+            ip = self._overrides[host]
+            url = request.url.copy_with(host=ip)
+            # Preserve original Host header and pass SNI hostname so TLS
+            # validates against the original hostname, not the raw IP.
+            headers = [(b"host", host.encode())] + [
+                (k, v) for k, v in request.headers.raw if k.lower() != b"host"
+            ]
+            request = httpx.Request(
+                method=request.method,
+                url=url,
+                headers=headers,
+                content=request.content,
+                extensions={"sni_hostname": host.encode()},
+            )
+        return await super().handle_async_request(request)
+
+
+# ============================================================================
 # Coverage declaration
 # ============================================================================
 
