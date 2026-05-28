@@ -156,15 +156,7 @@ Error hierarchy: `FetcherError` → `VenueUnavailable` (API failure) | `TokenNot
 
 ## Known limitations
 
-- **ApeX geo-block**: `omni.apex.exchange` resolves to `127.0.0.1` from some ISPs (confirmed on French residential connections). Workaround: add the real IP to `/etc/hosts`:
-  ```bash
-  # get real IP
-  dig @8.8.8.8 omni.apex.exchange +short
-  # add to /etc/hosts (requires sudo)
-  sudo sh -c 'echo "157.185.129.119 omni.apex.exchange" >> /etc/hosts'
-  # remove after use
-  sudo sed -i '' '/omni\.apex\.exchange/d' /etc/hosts
-  ```
+- **ApeX geo-block**: `omni.apex.exchange` resolves to `127.0.0.1` on some ISPs (confirmed on French residential connections). The fetcher works around this automatically via `DNSOverrideTransport`, which routes TCP to the real IP while preserving TLS SNI — no `/etc/hosts` or `sudo` required.
 - **Liquidations**: only 3 venues (Hyperliquid, Lighter, Extended) expose liquidations publicly. The other 5 require authenticated private streams. Gaps are declared explicitly via `Coverage.NOT_AVAILABLE`.
 - **Lighter OI**: uses `last_trade_price` as a mark price proxy (no dedicated mark price endpoint).
 - **Snapshot-only**: this tool takes one-shot snapshots. It is not a streaming feed and does not persist history.
@@ -173,7 +165,7 @@ Error hierarchy: `FetcherError` → `VenueUnavailable` (API failure) | `TokenNot
 ## Development
 
 ```bash
-# Run all tests (124 tests)
+# Run all tests (138 tests)
 pytest
 
 # Run a specific venue
