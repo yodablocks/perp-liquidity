@@ -2,7 +2,7 @@
 
 Cross-venue liquidity comparison across 8 perpetual DEX venues: order book depth, slippage, funding rates, and open interest — from public APIs, via the command line.
 
-Built as a portfolio piece for a quant trading application. No dashboard, no AI insights, no execution — just clean data from the order book.
+No dashboard, no AI insights, no execution — just clean data from the order book.
 
 ## Venues
 
@@ -45,6 +45,8 @@ perp-liquidity --token BTC --csv out/
 ```
 
 ## Sample output
+
+Full CSV snapshots from a live BTC run: [`examples/`](examples/)
 
 ```
 Perp Liquidity Snapshot — BTC  [2026-05-28 14:27:18 UTC]
@@ -145,7 +147,8 @@ src/perp_liquidity/
 ├── analyzers/
 │   ├── slippage.py       # compute_slippage, compute_slippage_multi
 │   ├── funding.py        # rank_funding, detect_flips
-│   └── open_interest.py  # rank_open_interest
+│   ├── open_interest.py  # rank_open_interest
+│   └── liquidations.py   # summarize_liquidations → LiquidationSummary
 ├── cli.py                # run_analysis, main()
 └── output.py             # format_report, write_csv
 ```
@@ -153,6 +156,41 @@ src/perp_liquidity/
 Each fetcher is an async context manager backed by `httpx.AsyncClient`. The CLI fetches all venues concurrently via `asyncio.gather` and absorbs per-venue errors — a single unavailable venue does not abort the run.
 
 Error hierarchy: `FetcherError` → `VenueUnavailable` (API failure) | `TokenNotListed` (token not traded there).
+
+## Using as a library
+
+`perp-liquidity` is installable as a pip dependency for use in other projects:
+
+```bash
+pip install -e ./perp-liquidity        # local
+pip install git+https://github.com/yodablocks/perp-liquidity
+```
+
+Run the full analysis pipeline programmatically:
+
+```python
+import asyncio
+from perp_liquidity.cli import run_analysis
+
+report = asyncio.run(run_analysis("BTC"))
+
+# Funding rates — ranked by APR ascending (most negative = rank 1)
+for row in report.funding:
+    print(f"{row.funding_rate.venue}: {row.funding_rate.apr_annualized:+.2f}% APR (rank {row.rank})")
+
+# OI dominance — ranked by USD descending
+for row in report.oi:
+    print(f"{row.open_interest.venue}: ${row.open_interest.oi_usd:,.0f} ({row.market_share_pct:.1f}%)")
+```
+
+Key dataclasses (all frozen, all carry `fetched_at`):
+
+| Class | Fields |
+|---|---|
+| `FundingRate` | `venue`, `token`, `rate_per_period`, `period_hours`, `apr_annualized` |
+| `OpenInterest` | `venue`, `token`, `oi_base`, `oi_usd`, `mark_price` |
+| `Liquidation` | `venue`, `token`, `side`, `size_usd`, `price`, `timestamp` |
+| `OrderBook` | `venue`, `token`, `bids`, `asks`, `mid_price` |
 
 ## Known limitations
 
