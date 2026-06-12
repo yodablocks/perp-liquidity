@@ -277,6 +277,7 @@ class HyperliquidClient(PerpDEXClient):
                         is_liq = (
                             trade.get("liquidation") is True
                             or trade.get("isLiquidation") is True
+                            or trade.get("hash") == "0x0000000000000000000000000000000000000000000000000000000000000000"
                         )
                         if not is_liq:
                             continue
