@@ -207,7 +207,7 @@ Key dataclasses (all frozen, all carry `fetched_at`):
 pytest
 
 # Run a specific venue
-pytest tests/test_hyperliquid.py -v
+pytest tests/test_extended.py -v
 
 # Type-check
 mypy src/
