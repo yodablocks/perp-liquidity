@@ -189,7 +189,7 @@ Key dataclasses (all frozen, all carry `fetched_at`):
 |---|---|
 | `FundingRate` | `venue`, `token`, `rate_per_period`, `period_hours`, `apr_annualized` |
 | `OpenInterest` | `venue`, `token`, `oi_base`, `oi_usd`, `mark_price` |
-| `Liquidation` | `venue`, `token`, `side`, `size_usd`, `price`, `timestamp` |
+| `Liquidation` | `venue`, `token`, `side`, `price`, `qty_base`, `qty_usd`, `occurred_at` |
 | `OrderBook` | `venue`, `token`, `bids`, `asks`, `mid_price` |
 
 ## Known limitations
