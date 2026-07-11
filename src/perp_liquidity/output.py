@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from perp_liquidity.cli import AnalysisReport
+    from perp_liquidity.analyzers.slippage import SlippageResult
 
 
 def format_report(report: "AnalysisReport") -> str:
@@ -36,12 +37,12 @@ def format_report(report: "AnalysisReport") -> str:
     lines.append("\nOpen Interest (USD)")
     lines.append(f"  {'Venue':<14} {'OI (USD)':>16} {'Share':>8} {'Rank':>6}")
     lines.append("  " + "-" * 48)
-    for row in report.oi:
-        oi = row.open_interest
+    for oi_row in report.oi:
+        oi = oi_row.open_interest
         lines.append(
             f"  {oi.venue:<14} ${oi.oi_usd:>14,.0f}"
-            f"  {row.market_share_pct:>6.1f}%"
-            f"  #{row.rank}"
+            f"  {oi_row.market_share_pct:>6.1f}%"
+            f"  #{oi_row.rank}"
         )
     if report.oi:
         total = report.oi[0].total_usd
@@ -56,9 +57,8 @@ def format_report(report: "AnalysisReport") -> str:
         lines.append("  " + "-" * (14 + 2 + 5 + 2 + 12 * len(clip_usds)))
 
         # group by (venue, side)
-        from itertools import groupby
 
-        keyed: dict[tuple[str, str], dict[float, object]] = {}
+        keyed: dict[tuple[str, str], dict[float, "SlippageResult"]] = {}
         for r in report.slippage:
             key = (r.venue, r.side)
             keyed.setdefault(key, {})[r.clip_usd] = r
@@ -69,14 +69,14 @@ def format_report(report: "AnalysisReport") -> str:
                 venues_seen.append(venue)
             clip_cols = []
             for c in clip_usds:
-                r = by_clip.get(c)
-                if r is None:
+                cell = by_clip.get(c)
+                if cell is None:
                     clip_cols.append(f"{'n/a':>9}")
-                elif r.partial:
-                    val = f"{r.slippage_bps:.3f}" if r.slippage_bps < 0.01 else f"{r.slippage_bps:.2f}"
+                elif cell.partial:
+                    val = f"{cell.slippage_bps:.3f}" if cell.slippage_bps < 0.01 else f"{cell.slippage_bps:.2f}"
                     clip_cols.append(f"{val + '*':>9}")
                 else:
-                    val = f"{r.slippage_bps:.3f}" if r.slippage_bps < 0.01 else f"{r.slippage_bps:.2f}"
+                    val = f"{cell.slippage_bps:.3f}" if cell.slippage_bps < 0.01 else f"{cell.slippage_bps:.2f}"
                     clip_cols.append(f"{val:>9}")
             lines.append(f"  {venue:<14}  {side:<5}  {'  '.join(clip_cols)}")
 
@@ -128,7 +128,7 @@ def write_csv(report: "AnalysisReport", path: str) -> None:
             w = csv.writer(f)
             w.writerow(["rank", "venue", "token", "oi_base", "oi_usd",
                         "mark_price", "market_share_pct", "total_usd"])
-            for row in report.oi:
-                oi = row.open_interest
-                w.writerow([row.rank, oi.venue, oi.token, oi.oi_base, oi.oi_usd,
-                             oi.mark_price, row.market_share_pct, row.total_usd])
+            for oi_row in report.oi:
+                oi = oi_row.open_interest
+                w.writerow([oi_row.rank, oi.venue, oi.token, oi.oi_base, oi.oi_usd,
+                             oi.mark_price, oi_row.market_share_pct, oi_row.total_usd])

@@ -7,7 +7,7 @@ from typing import Literal
 
 from perp_liquidity.fetchers.base import OrderBook
 
-DEFAULT_CLIPS = [1_000, 10_000, 100_000, 500_000]
+DEFAULT_CLIPS: list[float] = [1_000, 10_000, 100_000, 500_000]
 
 
 @dataclass(frozen=True)
