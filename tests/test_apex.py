@@ -105,10 +105,7 @@ def test_coverage_declares_all_four_dimensions():
 def test_default_client_uses_dns_override_transport():
     """When no client is injected, ApeXClient builds one with DNSOverrideTransport
     so omni.apex.exchange bypasses broken local DNS without /etc/hosts."""
-    from perp_liquidity.fetchers.base import DNSOverrideTransport
-    import inspect
 
-    client = ApeXClient()
     # Not yet entered -- just check the _dns_overrides class attr is set
     assert hasattr(ApeXClient, "DNS_OVERRIDES")
     assert "omni.apex.exchange" in ApeXClient.DNS_OVERRIDES

@@ -39,26 +39,26 @@ def summarize_liquidations(liqs: list[Liquidation]) -> LiquidationSummary:
             by_venue={},
         )
 
-    total_usd = sum(l.qty_usd for l in liqs)
-    long_liqs = [l for l in liqs if l.side == "long"]
-    short_liqs = [l for l in liqs if l.side == "short"]
-    largest = max(liqs, key=lambda l: l.qty_usd)
+    total_usd = sum(liq.qty_usd for liq in liqs)
+    long_liqs = [liq for liq in liqs if liq.side == "long"]
+    short_liqs = [liq for liq in liqs if liq.side == "short"]
+    largest = max(liqs, key=lambda liq: liq.qty_usd)
 
     # Per-venue breakdown (no further nesting)
     venues: dict[str, list[Liquidation]] = {}
-    for l in liqs:
-        venues.setdefault(l.venue, []).append(l)
+    for liq in liqs:
+        venues.setdefault(liq.venue, []).append(liq)
 
     by_venue = {
         venue: LiquidationSummary(
             count=len(vliqs),
-            total_usd=sum(l.qty_usd for l in vliqs),
-            long_usd=sum(l.qty_usd for l in vliqs if l.side == "long"),
-            short_usd=sum(l.qty_usd for l in vliqs if l.side == "short"),
-            long_count=sum(1 for l in vliqs if l.side == "long"),
-            short_count=sum(1 for l in vliqs if l.side == "short"),
-            largest_usd=max(l.qty_usd for l in vliqs),
-            largest_event=max(vliqs, key=lambda l: l.qty_usd),
+            total_usd=sum(liq.qty_usd for liq in vliqs),
+            long_usd=sum(liq.qty_usd for liq in vliqs if liq.side == "long"),
+            short_usd=sum(liq.qty_usd for liq in vliqs if liq.side == "short"),
+            long_count=sum(1 for liq in vliqs if liq.side == "long"),
+            short_count=sum(1 for liq in vliqs if liq.side == "short"),
+            largest_usd=max(liq.qty_usd for liq in vliqs),
+            largest_event=max(vliqs, key=lambda liq: liq.qty_usd),
         )
         for venue, vliqs in venues.items()
     }
@@ -66,8 +66,8 @@ def summarize_liquidations(liqs: list[Liquidation]) -> LiquidationSummary:
     return LiquidationSummary(
         count=len(liqs),
         total_usd=total_usd,
-        long_usd=sum(l.qty_usd for l in long_liqs),
-        short_usd=sum(l.qty_usd for l in short_liqs),
+        long_usd=sum(liq.qty_usd for liq in long_liqs),
+        short_usd=sum(liq.qty_usd for liq in short_liqs),
         long_count=len(long_liqs),
         short_count=len(short_liqs),
         largest_usd=largest.qty_usd,

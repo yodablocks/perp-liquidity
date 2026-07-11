@@ -23,7 +23,7 @@ from __future__ import annotations
 import asyncio
 import json
 from datetime import datetime, timezone
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import httpx
 import pytest
@@ -32,7 +32,6 @@ from perp_liquidity.fetchers.extended import ExtendedClient
 from perp_liquidity.fetchers.base import (
     Coverage,
     FundingRate,
-    Liquidation,
     OpenInterest,
     OrderBook,
     TokenNotListed,

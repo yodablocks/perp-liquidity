@@ -6,13 +6,11 @@ import argparse
 import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING
 
 from perp_liquidity.fetchers.base import (
     FetcherError,
     PerpDEXClient,
     TokenNotListed,
-    VenueUnavailable,
 )
 from perp_liquidity.analyzers.slippage import (
     SlippageResult,

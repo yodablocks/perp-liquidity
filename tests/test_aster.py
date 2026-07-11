@@ -7,7 +7,6 @@ a fake response matching Aster's actual API shapes (confirmed from live probing)
 
 from __future__ import annotations
 
-import json
 from datetime import datetime, timezone
 
 import httpx

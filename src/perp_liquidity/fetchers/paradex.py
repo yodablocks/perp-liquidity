@@ -274,7 +274,7 @@ class ParadexClient(PerpDEXClient):
                 oi_base = implied_base
                 oi_usd = implied_usd
         else:
-            raise VenueUnavailable(self.VENUE, f"mark_price is zero or negative")
+            raise VenueUnavailable(self.VENUE, "mark_price is zero or negative")
 
         return OpenInterest(
             venue=self.VENUE,

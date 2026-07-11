@@ -65,7 +65,6 @@ def _oi(venue: str, token: str, oi_usd: float = 1_000_000.0) -> OpenInterest:
 
 def make_success_client(venue: str, oi_usd: float = 1_000_000.0, rate: float = 0.001):
     """Return a fake client class that returns valid data for a given venue."""
-    import httpx
     from perp_liquidity.fetchers.base import Coverage, PerpDEXClient
 
     class FakeClient(PerpDEXClient):
@@ -94,7 +93,6 @@ def make_success_client(venue: str, oi_usd: float = 1_000_000.0, rate: float = 0
 
 
 def make_token_not_listed_client(venue: str):
-    import httpx
     from perp_liquidity.fetchers.base import Coverage, PerpDEXClient
 
     class FakeClient(PerpDEXClient):
@@ -123,7 +121,6 @@ def make_token_not_listed_client(venue: str):
 
 
 def make_unavailable_client(venue: str):
-    import httpx
     from perp_liquidity.fetchers.base import Coverage, PerpDEXClient
 
     class FakeClient(PerpDEXClient):
